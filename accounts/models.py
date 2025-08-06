@@ -40,11 +40,20 @@ class User(AbstractBaseUser, PermissionsMixin):
         return self.email
 
 class OTP(models.Model):
-    email = models.EmailField()  # Changed from ForeignKey to email field
+    email = models.EmailField()
+    username = models.CharField(max_length=150)
+    password = models.CharField(max_length=128)  # raw for now, hash before creating user
     otp = models.CharField(max_length=6)
-    created_at = models.DateTimeField(auto_now_add=True)
     expires_at = models.DateTimeField()
-    purpose = models.CharField(max_length=20, choices=[('register', 'Register'), ('reset', 'Reset')])
+    created_at = models.DateTimeField(auto_now_add=True)
+    purpose = models.CharField(max_length=30, default='register')
 
     def __str__(self):
-        return f"OTP for {self.email}"
+        return f"{self.email} - {self.otp} - {self.purpose}"
+    
+class PasswordResetToken(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    token = models.CharField(max_length=100, unique=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+    expires_at = models.DateTimeField()
+    is_used = models.BooleanField(default=False)

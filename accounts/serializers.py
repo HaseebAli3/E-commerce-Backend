@@ -91,7 +91,8 @@ class VerifyOTPSerializer(serializers.Serializer):
         user = User.objects.create(
             email=otp_obj.email,
             username=otp_obj.username,
-            password=otp_obj.password  # Already hashed
+            password=otp_obj.password , # Already hashed
+            is_active=True
         )
 
         # Clean up OTP
